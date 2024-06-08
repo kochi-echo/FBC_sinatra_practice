@@ -27,31 +27,37 @@ get '/memos/new' do
   erb :new
 end
 
+delete '/memos/:id' do
+  memos = read_memos(PATH)
+  memos.delete(params[:id])
+  write_memos(PATH, memos)
+
+  redirect '/memos'
+end
+
 get '/memos/:id' do
   @memo = read_memos(PATH)[params[:id]]
   erb :show
 end
 
 post '/memos' do
-  title = params['title']
-  content = params['content']
-
   memos = read_memos(PATH)
   id = (memos.keys.map(&:to_i).max + 1).to_s
-  memos[id] = { 'title' => title, 'content' => content }
+  memos[id] = { 'title' => params[:title], 'content' => params[:content] }
   write_memos(PATH, memos)
 
   redirect '/memos'
 end
 
-# get '/memos/:id/edit' do
-#   erb :edit
-# end
+get '/memos/:id/edit' do
+  @memo = read_memos(PATH)[params[:id]]
+  erb :edit
+end
 
-# patch '/memos/:id' do
-#   redirect '/memos/:id'
-# end
+patch '/memos/:id' do
+  memos = read_memos(PATH)
+  memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
+  write_memos(PATH, memos)
 
-# delete '/memos/:id' do
-#   redirect '/memos'
-# end
+  redirect "/memos/#{params[:id]}"
+end

@@ -2,5 +2,12 @@
    <%= @memo["title"] %>
 </h2>
 <p>
-   <%= @memo["content"] %>
+  <%= @memo["content"] %><br>
+  <form action="/memos/<%= params[:id] %>/edit" method="get">
+    <button type="submit">変更</button>
+  </form>
+  <form action="/memos/<%= params[:id] %>" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <button type="submit">削除</button>
+  </form>
 </p>
