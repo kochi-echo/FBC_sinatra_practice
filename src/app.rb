@@ -19,9 +19,10 @@ get '/memos' do
   erb :top
 end
 
-# get '/memos/:id' do
-#   erb :show
-# end
+get '/memos/:id' do
+  @memo = read_memos(PATH)[params[:id]]
+  erb :show
+end
 
 # get '/memos/new' do
 #   erb :new
