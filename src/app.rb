@@ -2,14 +2,22 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
+require 'json'
 
-# get '/' do
-#   redirect '/memos'
-# end
+PATH = 'public/data.json'
 
-# get '/memos' do
-#   erb :top
-# end
+def read_memos(path)
+  File.open(path) { |f| JSON.parse(f.read) }
+end
+
+get '/' do
+  redirect '/memos'
+end
+
+get '/memos' do
+  @memos = read_memos(PATH)
+  erb :top
+end
 
 # get '/memos/:id' do
 #   erb :show

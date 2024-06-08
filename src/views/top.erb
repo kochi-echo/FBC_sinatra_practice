@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>メモアプリ</title>
+</head>
+<body>
+  <h1 class="mb-4">メモアプリ</h1>
+  <ul>
+    <% @memos.each do |id, memo| %>
+      <li>
+        <%= memo["title"] %>
+      </li> 
+    <% end %>
+  </ul>
+</body>
+</html>
