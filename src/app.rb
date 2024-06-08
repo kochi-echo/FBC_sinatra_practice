@@ -14,6 +14,12 @@ def write_memos(path, input)
   File.open(path, 'w') { |f| JSON.dump(input, f) }
 end
 
+helpers do
+  def h(text)
+    Rack::Utils.escape_html(text)
+  end
+end
+
 get '/' do
   redirect '/memos'
 end
