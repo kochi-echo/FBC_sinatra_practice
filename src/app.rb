@@ -10,6 +10,10 @@ def read_memos(path)
   File.open(path) { |f| JSON.parse(f.read) }
 end
 
+def write_memos(path, input)
+  File.open(path, 'w') { |f| JSON.dump(input, f) }
+end
+
 get '/' do
   redirect '/memos'
 end
@@ -19,18 +23,26 @@ get '/memos' do
   erb :top
 end
 
+get '/memos/new' do
+  erb :new
+end
+
 get '/memos/:id' do
   @memo = read_memos(PATH)[params[:id]]
   erb :show
 end
 
-# get '/memos/new' do
-#   erb :new
-# end
+post '/memos' do
+  title = params['title']
+  content = params['content']
 
-# post '/memos' do
-#   redirect '/memos'
-# end
+  memos = read_memos(PATH)
+  id = (memos.keys.map(&:to_i).max + 1).to_s
+  memos[id] = { 'title' => title, 'content' => content }
+  write_memos(PATH, memos)
+
+  redirect '/memos'
+end
 
 # get '/memos/:id/edit' do
 #   erb :edit
