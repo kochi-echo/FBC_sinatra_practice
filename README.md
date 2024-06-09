@@ -80,3 +80,17 @@ $ bundle exec ruby src/app.rb
 |GET   |/memos/:memo_id/edit|指定したメモの編集画面を表示|data.jsonからメモ名と内容を取得して、edit.erbを表示|
 |PATCH |/memos/:memo_id     |指定したメモを編集|edit.erbのフォームに入力された内容をdata.jsonに反映し、/memos/:memo_idにリダイレクト|
 |DELETE|/memos/:memo_id     |指定したメモを削除|data.jsonからkeyが:memo_idのデータを削除し、/memosにリダイレクト|
+
+## レビュアー用コマンド
+
+- rubocop：rubyコードスタイルチェックgem
+
+```
+rubocop
+```
+
+- ERB Lint：erbファイルスタイルチェックgem
+
+```
+bundle exec erblint --lint-all
+```
