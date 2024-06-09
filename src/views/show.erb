@@ -2,7 +2,7 @@
    <%= h(@memo["title"]) %>
 </h2>
 <p>
-  <%= h(@memo["content"]) %><br>
+  <%= h(@memo["content"]).gsub(/\n/, '<br/>') %><br>
   <form action="/memos/<%= params[:id] %>/edit" method="get">
     <button type="submit">変更</button>
   </form>
@@ -10,4 +10,5 @@
     <input type="hidden" name="_method" value="delete">
     <button type="submit">削除</button>
   </form>
+  <button onclick="location.href='/memos'">TOPへ</button>
 </p>
