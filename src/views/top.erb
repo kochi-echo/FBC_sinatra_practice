@@ -2,7 +2,7 @@
   <% @memos.each do |id, memo| %>
     <li>
       <a href="/memos/<%= id %>"><%= h(memo["title"]) %></a>
-    </li> 
+    </li>
   <% end %>
 </ul>
 <button onclick="location.href='/memos/new'">追加</button>
