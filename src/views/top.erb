@@ -1,8 +1,12 @@
-<ul>
-  <% @memos.each do |id, memo| %>
-    <li>
-      <a href="/memos/<%= id %>"><%= h(memo["title"]) %></a>
-    </li>
-  <% end %>
-</ul>
-<button onclick="location.href='/memos/new'">追加</button>
+<p>
+  <ul>
+    <% @memos.each do |id, memo| %>
+      <li>
+        <a href="/memos/<%= id %>"><%= h(memo["title"]) %></a>
+      </li>
+    <% end %>
+  </ul>
+  <form action="/memos/new" method="get">
+    <button type="submit">追加</button>
+  </form>
+</p>
