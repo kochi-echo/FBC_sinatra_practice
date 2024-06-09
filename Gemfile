@@ -12,6 +12,6 @@ gem 'sinatra-contrib', '~> 4.0'
 
 gem 'redcarpet', '~> 3.6'
 
-gem "erb_lint", "~> 0.5.0"
+gem 'erb_lint', '~> 0.5.0'
 
 gem 'parser', '~> 3.2.1'
