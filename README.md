@@ -86,11 +86,11 @@ $ bundle exec ruby src/app.rb
 - rubocop：rubyコードスタイルチェックgem
 
 ```
-rubocop
+$ rubocop
 ```
 
 - ERB Lint：erbファイルスタイルチェックgem
 
 ```
-bundle exec erblint --lint-all
+$ bundle exec erblint --lint-all
 ```
