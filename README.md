@@ -12,11 +12,19 @@
 
 ## 実行方法
 
-1. `/pracite`以下にて、以下のコマンドをターミナルで実行してください。
+1. `/FBC_Sinatra_practice`にて、以下のコマンドをターミナルで実行してください。
+
+開発中メモアプリを実行する場合は以下のコマンドでbranchを移動してください。
+
+```
+$ git checkout simple_form 
+```
+
+サイトを閲覧にするには、以下のコマンドを実行してください。
 
 ```
 $ bundle install
-$ ruby app.rb
+$ bundle exec ruby src/app.rb
 ```
 
 2. 以下のリンクにアクセスしてください。

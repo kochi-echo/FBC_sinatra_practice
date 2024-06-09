@@ -4,7 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
-PATH = 'public/data.json'
+PATH = File.join(__dir__, 'public/data.json')
 
 def read_memos(path)
   File.open(path) { |f| JSON.parse(f.read) }
