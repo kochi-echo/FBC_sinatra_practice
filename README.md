@@ -10,16 +10,7 @@ ruby app.rb
 
 ## /srcディレクトリ構成
 
-.
-├── app.rb #メイン処理
-├── public
-│   └── data.json #メモのデータファイル
-└── views
-    ├── edit.erb #選択したメモ編集画面erbファイル
-    ├── layout.erb #デフォルトerbファイル
-    ├── new.erb #メモ新規作成erbファイル
-    ├── show.erb #選択したメモ表示画面erbファイル
-    └── top.erb #メモ一覧表示erbファイル
+<img width="388" alt="スクリーンショット 2024-06-09 9 53 10" src="https://github.com/kochi-echo/FBC_Sinatra_practice/assets/47914971/5847d137-0816-43cc-8a89-749cecac2575">
 
 ## Method表
 
