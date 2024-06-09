@@ -12,22 +12,30 @@
 
 ## 実行方法
 
-1. `/FBC_Sinatra_practice`にて、以下のコマンドをターミナルで実行してください。
+1. ローカルに以下のコマンドでcloneしてください。
 
-開発中メモアプリを実行する場合は以下のコマンドでbranchを移動してください。
+```
+$ git clone https://github.com/kochi-echo/FBC_Sinatra_practice.git
+```
+
+2. `/FBC_Sinatra_practice`にて、以下のコマンドをターミナルで実行してください。
+
+- 開発中メモアプリを実行する場合は以下のコマンドでbranchを移動してください。
 
 ```
 $ git checkout simple_form 
 ```
 
-サイトを閲覧にするには、以下のコマンドを実行してください。
+- サイトを閲覧にするには、以下のコマンドを実行してください。
 
 ```
 $ bundle install
 $ bundle exec ruby src/app.rb
 ```
 
-2. 以下のリンクにアクセスしてください。
+- サーバ終了には`Ctrl + C`をしてください。
+
+3. 以下のリンクにアクセスしてください。
 
 [メモアプリTop画面](http://localhost:4567/memos)
 
