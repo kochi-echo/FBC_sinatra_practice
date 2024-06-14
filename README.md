@@ -26,16 +26,21 @@ $ git clone https://github.com/kochi-echo/FBC_Sinatra_practice.git
 $ git checkout simple_form 
 ```
 
-- サイトを閲覧にするには、以下のコマンドを実行してください。
+- Gemfileに従ってGemをインストールするには以下のコマンド実行してください（一度だけで良い）。
 
 ```
 $ bundle install
+```
+
+- サイトを閲覧にするには、以下のコマンドを実行してください。
+
+```
 $ bundle exec ruby src/app.rb
 ```
 
 - サーバ終了には`Ctrl + C`をしてください。
 
-3. 以下のリンクにアクセスしてください。
+1. 以下のリンクにアクセスしてください。
 
 [メモアプリTop画面](http://localhost:4567/memos)
 
