@@ -40,7 +40,7 @@ $ bundle exec ruby src/app.rb
 
 - サーバ終了には`Ctrl + C`をしてください。
 
-1. 以下のリンクにアクセスしてください。
+3. 以下のリンクにアクセスしてください。
 
 [メモアプリTop画面](http://localhost:4567/memos)
 
