@@ -6,12 +6,12 @@ require 'json'
 
 PATH = File.join(__dir__, 'public/data.json')
 
-def read_memos(path)
-  File.open(path) { |f| JSON.parse(f.read) }
+def read_memos
+  File.open(PATH) { |f| JSON.parse(f.read) }
 end
 
-def write_memos(path, input)
-  File.open(path, 'w') { |f| JSON.dump(input, f) }
+def write_memos(input)
+  File.open(PATH, 'w') { |f| JSON.dump(input, f) }
 end
 
 helpers do
@@ -25,7 +25,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = read_memos(PATH)
+  @memos = read_memos
   erb :top
 end
 
@@ -34,36 +34,36 @@ get '/memos/new' do
 end
 
 delete '/memos/:id' do
-  memos = read_memos(PATH)
+  memos = read_memos
   memos.delete(params[:id])
-  write_memos(PATH, memos)
+  write_memos(memos)
 
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo = read_memos(PATH)[params[:id]]
+  @memo = read_memos[params[:id]]
   erb :show
 end
 
 post '/memos' do
-  memos = read_memos(PATH)
+  memos = read_memos
   id = (memos.keys.map(&:to_i).max + 1).to_s
   memos[id] = { 'title' => params[:title], 'content' => params[:content] }
-  write_memos(PATH, memos)
+  write_memos(memos)
 
   redirect '/memos'
 end
 
 get '/memos/:id/edit' do
-  @memo = read_memos(PATH)[params[:id]]
+  @memo = read_memos[params[:id]]
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = read_memos(PATH)
+  memos = read_memos
   memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
-  write_memos(PATH, memos)
+  write_memos(memos)
 
   redirect "/memos/#{params[:id]}"
 end
