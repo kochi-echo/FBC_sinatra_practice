@@ -64,6 +64,10 @@ $ brew services start postgresql
 $ bundle exec ruby src/app.rb
 ```
 
+以下のリンクからサイトの閲覧ができます。
+
+[メモアプリTop画面](http://localhost:4567/memos)
+
 - サーバ終了には`Ctrl + C`をしてください。
 
 - DBを終了する場合は以下のコマンドを実行してください
@@ -73,10 +77,6 @@ $ brew services stop postgresql
 ```
 
 ※終了させるのを忘れることが多いので、サイト閲覧後は必ず終了させてください。
-
-1. 以下のリンクにアクセスしてください。
-
-[メモアプリTop画面](http://localhost:4567/memos)
 
 ## 操作方法
 
