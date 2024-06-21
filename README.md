@@ -10,7 +10,9 @@
 - メモ詳細からメモのタイトルと内容を変更
 - メモ詳細からメモを削除
 
-## 実行方法
+## 手順
+
+### アプリの準備
 
 1. ローカルに以下のコマンドでcloneしてください。
 
@@ -23,7 +25,7 @@ $ git clone https://github.com/kochi-echo/FBC_Sinatra_practice.git
 - 開発中メモアプリを実行する場合は以下のコマンドでbranchを移動してください。
 
 ```
-$ git checkout simple_form 
+$ git checkout simple-db
 ```
 
 - Gemfileに従ってGemをインストールするには以下のコマンド実行してください（一度だけで良い）。
@@ -32,7 +34,31 @@ $ git checkout simple_form
 $ bundle install
 ```
 
-- サイトを閲覧にするには、以下のコマンドを実行してください。
+### postgresqlの準備（Mac&Homebrewの場合）
+
+Mac PCかつHomebrewを使用する場合は、以下のコマンドを実行してpostgresqlをインストールしてください。
+
+```
+$ brew update
+$ brew install postgresql
+$ psql --version
+```
+
+※以下のバージョンで動作確認済み
+
+```
+psql (PostgreSQL) 14.12 (Homebrew)
+```
+
+### 実行方法
+
+- データベース（DB）を起動するには以下のコマンドを実行してください
+
+```
+$ brew services start postgresql
+```
+
+- サイトを閲覧にするには、上記のDBの起動をした後に以下のコマンドを実行してください
 
 ```
 $ bundle exec ruby src/app.rb
@@ -40,7 +66,15 @@ $ bundle exec ruby src/app.rb
 
 - サーバ終了には`Ctrl + C`をしてください。
 
-3. 以下のリンクにアクセスしてください。
+- DBを終了する場合は以下のコマンドを実行してください
+
+```
+$ brew services stop postgresql
+```
+
+※終了させるのを忘れることが多いので、サイト閲覧後は必ず終了させてください。
+
+1. 以下のリンクにアクセスしてください。
 
 [メモアプリTop画面](http://localhost:4567/memos)
 
@@ -78,13 +112,13 @@ $ bundle exec ruby src/app.rb
 
 |Method|Path|Description|Process|
 |------|--------------------|---|---|
-|GET   |/memos              |メモ一覧を表示   |data.jsonからメモ名を取得して、top.erbを表示|
-|GET   |/memos/:memo_id     |指定したメモを表示|data.jsonからメモ名と内容を取得して、show.erbを表示|
+|GET   |/memos              |メモ一覧を表示   |DB:memosからメモ名を取得して、top.erbを表示|
+|GET   |/memos/:memo_id     |指定したメモを表示|DB:memosからメモ名と内容を取得して、show.erbを表示|
 |GET   |/memos/new          |メモ作成画面を表示|new.erbを表示|
-|POST  |/memos              |メモを作成|new.erbのフォームに入力された内容をdata.jsonに反映し、/memosにリダイレクト|
-|GET   |/memos/:memo_id/edit|指定したメモの編集画面を表示|data.jsonからメモ名と内容を取得して、edit.erbを表示|
-|PATCH |/memos/:memo_id     |指定したメモを編集|edit.erbのフォームに入力された内容をdata.jsonに反映し、/memos/:memo_idにリダイレクト|
-|DELETE|/memos/:memo_id     |指定したメモを削除|data.jsonからkeyが:memo_idのデータを削除し、/memosにリダイレクト|
+|POST  |/memos              |メモを作成|new.erbのフォームに入力された内容をDB:memosに反映し、/memosにリダイレクト|
+|GET   |/memos/:memo_id/edit|指定したメモの編集画面を表示|DB:memosからメモ名と内容を取得して、edit.erbを表示|
+|PATCH |/memos/:memo_id     |指定したメモを編集|edit.erbのフォームに入力された内容をDB:memosに反映し、/memos/:memo_idにリダイレクト|
+|DELETE|/memos/:memo_id     |指定したメモを削除|DB:memosから:memo_idのデータを削除し、/memosにリダイレクト|
 
 ## レビュアー用コマンド
 
