@@ -2,10 +2,7 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
 require 'pg'
-
-PATH = File.join(__dir__, 'public/data.json')
 
 class Memo
   def initialize(params)
