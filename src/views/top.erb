@@ -1,6 +1,6 @@
 <p>
   <ul>
-    <% @memos.each do |memo| %>
+    <% @memos_identified.each do |memo| %>
       <li>
         <a href="/memos/<%= memo["id"] %>"><%= h(memo["title"]) %></a>
       </li>

@@ -1,8 +1,8 @@
 <p>
   <form action="/memos/<%= params[:id] %>" method="post">
     <input type="hidden" name="_method" value="patch">
-    <input type="text" id="title" name="title" value="<%= h(@memo["title"]) %>"><br>
-    <textarea id="content" name="content"><%= h(@memo["content"]) %></textarea><br>
+    <input type="text" id="title" name="title" value="<%= h(@memo_identified["title"]) %>"><br>
+    <textarea id="content" name="content"><%= h(@memo_identified["content"]) %></textarea><br>
     <button type="submit">保存</button>
   </form>
 </p>

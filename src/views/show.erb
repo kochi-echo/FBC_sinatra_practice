@@ -1,8 +1,8 @@
 <h2>
-   <%= h(@memo["title"]) %>
+   <%= h(@memo_identified["title"]) %>
 </h2>
 <p>
-  <%= h(@memo["content"]).gsub(/\n/, '<br/>') %><br>
+  <%= h(@memo_identified["content"]).gsub(/\n/, '<br/>') %><br>
   <form action="/memos/<%= params[:id] %>/edit" method="get">
     <button type="submit">変更</button>
   </form>

@@ -12,8 +12,12 @@ class Memo
     @params = params
   end
 
-  def self.all
+  def self.all_hash
     conn.exec('SELECT * FROM memos')
+  end
+
+  def self.find_hash(id)
+    conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])[0]
   end
 
   def save
@@ -21,9 +25,13 @@ class Memo
     result.cmd_tuples == 1
   end
 
-  def self.show(params)
-    result = conn.exec_params('SELECT * FROM memos WHERE id = $1;', [params[:id]])
-    result.ntuples > 0 ? result[0].to_h : {}
+  def update(params)
+    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params[:title], params[:content], params[:id]])
+    result.cmd_tuples == 1
+  end
+
+  def destroy
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params[:id]])
   end
 end
 
@@ -33,18 +41,11 @@ end
 
 configure do
   result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
-  conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)') if result.values.empty?
-  # conn.exec_params('INSERT INTO memos_test(title, content) VALUES ($1, $2);', ['メモ1', 'メモ1の内容'])
-  # conn.exec_params('INSERT INTO memos_test(title, content) VALUES ($1, $2);', ['メモ2', "メモ2の内容\nメモ2の内容"])
-end
-
-
-def read_memos
-  File.open(PATH) { |f| JSON.parse(f.read) }
-end
-
-def write_memos(input)
-  File.open(PATH, 'w') { |f| JSON.dump(input, f) }
+  if result.values.empty?
+    conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
+    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', ['メモ1', 'メモ1の内容'])
+    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', ['メモ2', "メモ2の内容\nメモ2の内容"])
+  end
 end
 
 helpers do
@@ -58,7 +59,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = Memo.all
+  @memos_identified = Memo.all_hash
   erb :top
 end
 
@@ -67,21 +68,20 @@ get '/memos/new' do
 end
 
 delete '/memos/:id' do
-  memos = read_memos
-  memos.delete(params[:id])
-  write_memos(memos)
+  memo = Memo.new(params)
+  memo.destroy
 
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo = Memo.show(params)
+  set_memo
   erb :show
 end
 
 post '/memos' do
-  @memo = Memo.new(params)
-  if @memo.save
+  memo = Memo.new(params)
+  if memo.save
     redirect '/memos'
   else
     redirect '/memos/new'
@@ -89,14 +89,19 @@ post '/memos' do
 end
 
 get '/memos/:id/edit' do
-  @memo = read_memos[params[:id]]
+  set_memo
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = read_memos
-  memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
-  write_memos(memos)
+  memo = Memo.new(params)
+  if memo.update(params)
+    redirect "/memos/#{params[:id]}"
+  else
+    redirect "/memos/#{params[:id]}/edit"
+  end
+end
 
-  redirect "/memos/#{params[:id]}"
+def set_memo
+  @memo_identified = Memo.find_hash(params[:id])
 end
