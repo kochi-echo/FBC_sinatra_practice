@@ -4,9 +4,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'pg'
 
-class PGRecord
+class PGDataBase
   def self.conn
-    puts 'NG' unless @conn
     @conn ||= PG.connect(dbname: 'postgres')
   end
 
@@ -26,9 +25,11 @@ class PGRecord
   end
 end
 
-class Memo < PGRecord
-  def initialize(params)
-    @params = params
+class Memo < PGDataBase
+  def initialize(params = {})
+    @id = params['id']
+    @title = params['title']
+    @content = params['content']
   end
 
   def self.all
@@ -40,22 +41,22 @@ class Memo < PGRecord
   end
 
   def save
-    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@params[:title], @params[:content]])
+    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@title, @content])
     result.cmd_tuples == 1
   end
 
   def update(params)
-    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params[:title], params[:content], params[:id]])
+    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [@title, @content, @id])
     result.cmd_tuples == 1
   end
 
   def destroy
-    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params[:id]])
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@id])
   end
 end
 
 configure do
-  PGRecord.set_table
+  PGDataBase.set_table
 end
 
 helpers do
