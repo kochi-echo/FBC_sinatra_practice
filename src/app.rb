@@ -4,17 +4,34 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'pg'
 
-class Memo
+class PGTable
+  def conn
+    @conn ||= PG.connect(dbname: 'postgres')
+  end
+
+  private
+
+  def self.set_table
+    result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
+    if result.values.empty?
+      conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
+      conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
+      conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
+    end
+  end
+end
+
+class Memo < PGTable
   def initialize(params)
     @params = params
   end
 
-  def self.all_hash
+  def self.all
     conn.exec('SELECT * FROM memos')
   end
 
-  def self.find_hash(id)
-    conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])[0]
+  def self.find(id)
+    conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
   end
 
   def save
@@ -32,17 +49,8 @@ class Memo
   end
 end
 
-def conn
-  @conn ||= PG.connect(dbname: 'postgres')
-end
-
 configure do
-  result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
-  if result.values.empty?
-    conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
-  end
+  PGTable.set_table
 end
 
 helpers do
@@ -56,7 +64,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos_identified = Memo.all_hash
+  @memos = Memo.all
   erb :top
 end
 
@@ -100,5 +108,5 @@ patch '/memos/:id' do
 end
 
 def set_memo
-  @memo_identified = Memo.find_hash(params[:id])
+  @memo_identified = Memo.find(params[:id])[0]
 end
