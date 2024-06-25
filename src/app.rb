@@ -4,7 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'pg'
 
-class PGTable
+class PGRecord
   def conn
     @conn ||= PG.connect(dbname: 'postgres')
   end
@@ -21,7 +21,7 @@ class PGTable
   end
 end
 
-class Memo < PGTable
+class Memo < PGRecord
   def initialize(params)
     @params = params
   end
@@ -50,7 +50,7 @@ class Memo < PGTable
 end
 
 configure do
-  PGTable.set_table
+  PGRecord.set_table
 end
 
 helpers do
