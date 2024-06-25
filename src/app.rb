@@ -5,8 +5,13 @@ require 'sinatra/reloader'
 require 'pg'
 
 class PGRecord
-  def conn
+  def self.conn
+    puts 'NG' unless @conn
     @conn ||= PG.connect(dbname: 'postgres')
+  end
+
+  def conn
+    self.class.conn
   end
 
   private
