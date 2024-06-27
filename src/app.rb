@@ -4,28 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'pg'
 
-class PGDataBase
-  @@conn = PG.connect(dbname: 'postgres')
-
-  def self.conn
-    @@conn
-  end
-
-  def conn
-    self.class.conn
-  end
-
-  def self.set_table
-    result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
-    return unless result.values.empty?
-
-    conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
-  end
-end
-
-class Memo < PGDataBase
+class Memo
   def initialize(params = {})
     @id = params['id']
     @title = params['title']
@@ -46,7 +25,7 @@ class Memo < PGDataBase
   end
 
   def update(params)
-    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [@title, @content, @id])
+    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params[:title], params[:content], params[:id]])
     result.cmd_tuples == 1
   end
 
@@ -55,8 +34,19 @@ class Memo < PGDataBase
   end
 end
 
+def conn
+  @conn ||= PG.connect(dbname: 'postgres')
+end
+
 configure do
-  PGDataBase.set_table
+  def self.set_table
+    result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
+    return unless result.values.empty?
+
+    conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
+    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
+    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
+  end
 end
 
 helpers do
@@ -79,14 +69,14 @@ get '/memos/new' do
 end
 
 delete '/memos/:id' do
-  memo = Memo.new(params)
-  memo.destroy
+  set_memo
+  @memo.destroy
 
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  set_memo
+  @memo_identified = set_memo[0]
   erb :show
 end
 
@@ -100,13 +90,13 @@ post '/memos' do
 end
 
 get '/memos/:id/edit' do
-  set_memo
+  @memo_identified = set_memo[0]
   erb :edit
 end
 
 patch '/memos/:id' do
-  memo = Memo.new(params)
-  if memo.update(params)
+  set_memo
+  if @memo.update(params)
     redirect "/memos/#{params[:id]}"
   else
     redirect "/memos/#{params[:id]}/edit"
@@ -114,5 +104,5 @@ patch '/memos/:id' do
 end
 
 def set_memo
-  @memo_identified = Memo.find(params[:id])[0]
+  @memo = Memo.find(params[:id])
 end
