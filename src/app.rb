@@ -5,10 +5,10 @@ require 'sinatra/reloader'
 require 'pg'
 
 class Memo
-  def initialize(params = {})
-    @id = params['id']
-    @title = params['title']
-    @content = params['content']
+  attr_reader :params
+
+  def initialize(params)
+    @params = params
   end
 
   def self.all
@@ -16,11 +16,15 @@ class Memo
   end
 
   def self.find(id)
-    conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
+    result = conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
+    puts 'find'
+    p result
+    puts result[0]
+    Memo.new(result[0])
   end
 
   def save
-    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@title, @content])
+    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@params[:title], @params[:content]])
     result.cmd_tuples == 1
   end
 
@@ -30,7 +34,8 @@ class Memo
   end
 
   def destroy
-    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@id])
+    puts "destroy id: #{@params[:id]}"
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params[:id]])
   end
 end
 
@@ -70,13 +75,14 @@ end
 
 delete '/memos/:id' do
   set_memo
+  puts "params: #{@memo.params}"
   @memo.destroy
 
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo_identified = set_memo[0]
+  @memo_identified = set_memo.params
   erb :show
 end
 
@@ -90,7 +96,7 @@ post '/memos' do
 end
 
 get '/memos/:id/edit' do
-  @memo_identified = set_memo[0]
+  @memo_identified = set_memo.params
   erb :edit
 end
 
