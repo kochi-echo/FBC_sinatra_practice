@@ -17,25 +17,21 @@ class Memo
 
   def self.find(id)
     result = conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
-    puts 'find'
-    p result
-    puts result[0]
     Memo.new(result[0])
   end
 
   def save
-    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@params[:title], @params[:content]])
+    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@params['title'], @params['content']])
     result.cmd_tuples == 1
   end
 
   def update(params)
-    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params[:title], params[:content], params[:id]])
+    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params['title'], params['content'], params['id']])
     result.cmd_tuples == 1
   end
 
   def destroy
-    puts "destroy id: #{@params[:id]}"
-    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params[:id]])
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params['id']])
   end
 end
 
@@ -44,14 +40,12 @@ def conn
 end
 
 configure do
-  def self.set_table
-    result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
-    return unless result.values.empty?
+  result = conn.exec("SELECT * FROM information_schema.tables WHERE table_name = 'memos'")
+  return unless result.values.empty?
 
-    conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
-    conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
-  end
+  conn.exec('CREATE TABLE memos (id serial, title varchar(255), content text)')
+  conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %w[メモ1 メモ1の内容])
+  conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', %W[メモ2 メモ2の内容\nメモ2の内容])
 end
 
 helpers do
@@ -75,7 +69,6 @@ end
 
 delete '/memos/:id' do
   set_memo
-  puts "params: #{@memo.params}"
   @memo.destroy
 
   redirect '/memos'
@@ -103,12 +96,12 @@ end
 patch '/memos/:id' do
   set_memo
   if @memo.update(params)
-    redirect "/memos/#{params[:id]}"
+    redirect "/memos/#{params['id']}"
   else
-    redirect "/memos/#{params[:id]}/edit"
+    redirect "/memos/#{params['id']}/edit"
   end
 end
 
 def set_memo
-  @memo = Memo.find(params[:id])
+  @memo = Memo.find(params['id'])
 end
