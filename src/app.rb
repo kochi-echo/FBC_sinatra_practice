@@ -5,10 +5,12 @@ require 'sinatra/reloader'
 require 'pg'
 
 class Memo
-  attr_reader :params
+  attr_reader :id, :title, :content
 
   def initialize(params)
-    @params = params
+    @id = params['id']
+    @title = params['title']
+    @content = params['content']
   end
 
   def self.all
@@ -21,7 +23,7 @@ class Memo
   end
 
   def save
-    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@params['title'], @params['content']])
+    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@title, @content])
     result.cmd_tuples == 1
   end
 
@@ -31,7 +33,7 @@ class Memo
   end
 
   def destroy
-    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@params['id']])
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@id])
   end
 end
 
@@ -75,7 +77,7 @@ delete '/memos/:id' do
 end
 
 get '/memos/:id' do
-  @memo_identified = set_memo.params
+  set_memo
   erb :show
 end
 
@@ -89,7 +91,7 @@ post '/memos' do
 end
 
 get '/memos/:id/edit' do
-  @memo_identified = set_memo.params
+  set_memo
   erb :edit
 end
 
