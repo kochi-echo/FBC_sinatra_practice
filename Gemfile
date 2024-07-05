@@ -20,3 +20,5 @@ gem 'parser', '~> 3.2.1'
 group :development do
   gem 'rubocop-fjord', require: false
 end
+
+gem 'pg', '~> 1.5'

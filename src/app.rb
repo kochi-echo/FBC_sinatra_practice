@@ -2,16 +2,47 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
+require 'pg'
 
-PATH = File.join(__dir__, 'public/data.json')
+class Memo
+  attr_reader :id, :title, :content
 
-def read_memos
-  File.open(PATH) { |f| JSON.parse(f.read) }
-end
+  def initialize(params)
+    @id = params['id']
+    @title = params['title']
+    @content = params['content']
+  end
 
-def write_memos(input)
-  File.open(PATH, 'w') { |f| JSON.dump(input, f) }
+  def self.all
+    conn.exec('SELECT * FROM memos')
+  end
+
+  def self.find(id)
+    result = conn.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
+    Memo.new(result[0])
+  end
+
+  def save
+    result = conn.exec_params('INSERT INTO memos(title, content) VALUES ($1, $2);', [@title, @content])
+    result.cmd_tuples == 1
+  end
+
+  def update(params)
+    result = conn.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3;', [params['title'], params['content'], params['id']])
+    result.cmd_tuples == 1
+  end
+
+  def destroy
+    conn.exec_params('DELETE FROM memos WHERE id = $1;', [@id])
+  end
+
+  def self.conn
+    @conn ||= PG.connect(dbname: 'postgres')
+  end
+
+  def conn
+    self.class.conn # インスタンスメソッド化
+  end
 end
 
 helpers do
@@ -25,7 +56,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = read_memos
+  @memos = Memo.all
   erb :top
 end
 
@@ -34,36 +65,40 @@ get '/memos/new' do
 end
 
 delete '/memos/:id' do
-  memos = read_memos
-  memos.delete(params[:id])
-  write_memos(memos)
+  set_memo
+  @memo.destroy
 
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo = read_memos[params[:id]]
+  set_memo
   erb :show
 end
 
 post '/memos' do
-  memos = read_memos
-  id = (memos.keys.map(&:to_i).max + 1).to_s
-  memos[id] = { 'title' => params[:title], 'content' => params[:content] }
-  write_memos(memos)
-
-  redirect '/memos'
+  memo = Memo.new(params)
+  if memo.save
+    redirect '/memos'
+  else
+    redirect '/memos/new'
+  end
 end
 
 get '/memos/:id/edit' do
-  @memo = read_memos[params[:id]]
+  set_memo
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = read_memos
-  memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
-  write_memos(memos)
+  set_memo
+  if @memo.update(params)
+    redirect "/memos/#{params['id']}"
+  else
+    redirect "/memos/#{params['id']}/edit"
+  end
+end
 
-  redirect "/memos/#{params[:id]}"
+def set_memo
+  @memo = Memo.find(params['id'])
 end
