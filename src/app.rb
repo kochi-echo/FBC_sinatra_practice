@@ -36,8 +36,6 @@ class Memo
     conn.exec_params('DELETE FROM memos WHERE id = $1;', [@id])
   end
 
-  private
-
   def self.conn
     @conn ||= PG.connect(dbname: 'postgres')
   end
