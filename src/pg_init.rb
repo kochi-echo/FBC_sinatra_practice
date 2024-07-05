@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sinatra'
-require 'sinatra/reloader'
 require 'pg'
 
 conn = PG.connect(dbname: 'postgres')
