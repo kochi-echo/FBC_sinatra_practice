@@ -58,6 +58,12 @@ psql (PostgreSQL) 14.12 (Homebrew)
 $ brew services start postgresql
 ```
 
+- DBにmemosテーブルが無い場合（初回サイト閲覧時など）は以下のコマンドを実行してください。
+
+```
+$ bundle exec ruby src/pg_init.rb
+```
+
 - サイトを閲覧にするには、上記のDBの起動をした後に以下のコマンドを実行してください
 
 ```
